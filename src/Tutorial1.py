@@ -8,50 +8,50 @@ walk_left = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.im
 bg = pygame.image.load('bg.jpg')
 char = pygame.image.load('standing.png') 
 
-x = 50
-y = 400
-width = 64
-height = 64
-vel = 5
-
 screen_width = 500
 screen_height = 480
 
-is_jump = False
-jump_count = 10
-run = True
 
-left = False
-right = False
-walk_count = 0
 
 clock = pygame.time.Clock()
 
-print(3//4)
+class player(object):
+    def __init__(self,x,y,width,height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.vel = 5
+        self.is_jump = False
+        self.jump_count = 10
+        self.left = False
+        self.right = False
+        self.walk_count = 0
+    
+    def draw(self,win):
+        if self.walk_count + 1 >= 27:
+            self.walk_count = 0
+    
+        if self.left:
+            win.blit(walk_left[walk_count//3],(self.x,self.y))
+            self.walk_count+=1
+        
+        elif self.right:
+            win.blit(walk_right[self.walk_count//3],(self.x,self.y))
+            self.walk_count+=1
+    
+        else:
+            win.blit(char,(self.x,self.y))
+        
 def redraw_game_window():
     #update game window every frame, 27 frames per second
     #each entry in the arrays is 3 frames
-    global walk_count #will be changing outside
-    #27 frames per second
     win.blit(bg,(0,0)) 
-    
-    if walk_count + 1 >= 27:
-        walk_count = 0
-    
-    if left:
-        win.blit(walk_left[walk_count//3],(x,y))
-        walk_count+=1
-        
-    elif right:
-        win.blit(walk_right[walk_count//3],(x,y))
-        walk_count+=1
-    
-    else:
-        win.blit(char,(x,y))
-        
-        
-    #final argument is dimensions, starting point top left corner
+    man.draw(win)
     pygame.display.update() #to update the screen
+    
+man = player(300,410,64,64)
+run = True
 
 while run:
     clock.tick(27)   
@@ -63,20 +63,20 @@ while run:
     #movement hold down the arrow key
     keys = pygame.key.get_pressed()
     
-    if keys[pygame.K_LEFT] and x >= vel:
-        left = True
-        right = False
-        x -= vel
+    if keys[pygame.K_LEFT] and man.x >= man.vel:
+        man.left = True
+        man.right = False
+        man.x -= man.vel
     
-    elif keys[pygame.K_RIGHT] and x + width + vel <= screen_width:
+    elif keys[pygame.K_RIGHT] and man.x + man.width + man.vel <= screen_width:
         left = False
         right = True
-        x += vel
+        man.x += man.vel
     else:
         right = False
         left = False;
         walk_count = 0
-    if not(is_jump):
+    if not(man.is_jump):
         if keys[pygame.K_SPACE]:
             is_jump = True
             right = False
@@ -85,13 +85,13 @@ while run:
     else:
         #for jumping think 2D motion from physics parabola
         #cant allow upward or downward movement
-        if jump_count >= -10:
+        if man.jump_count >= -10:
             neg = 1
-            if jump_count < 0:
+            if man.jump_count < 0:
                 neg = -1
-            y -= (jump_count**2)*0.5*neg
-            print('Jump Count: ' + str(jump_count) + 'y = ' + str(y))
-            jump_count -= 1
+            man.y -= (man.jump_count**2)*0.5*neg
+            #print('Jump Count: ' + str(man.jump_count) + 'y = ' + str(y))
+            man.jump_count -= 1
         else:
             jump_count = 10
             is_jump = False
